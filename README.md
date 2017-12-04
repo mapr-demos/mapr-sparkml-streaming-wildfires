@@ -10,7 +10,7 @@ The United States Forest Service provides datasets that describe forest fires th
 
 Predict where forest fires are prone to occur by partitioning the locations of past burns into clusters whose centroids can be used to optimally place heavy fire fighting equipment as near as possible to where fires are likely to occur. The K-Means clustering algorithm is perfectly suited for this purpose.
 
-<img src="https://github.com/mapr-demos/mapr-sparkml-streaming-wildfires/blob/master/images/fire_centroids.png?raw=true" width="66%" align="center" hspace="10">
+<img src="https://github.com/mapr-demos/mapr-sparkml-streaming-wildfires/blob/master/images/fire_centroids.png?raw=true" width="66%" align="right" hspace="10">
 
 The goal of this project is to show some of the features that MapR provides which make it a delightful data layer to use for data science. Implementing ML applications on MapR has several advantages:
 * MapR provides data scientists easy self-service access to data
