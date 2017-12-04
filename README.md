@@ -14,3 +14,57 @@ The goal of this project is to show some of the features that MapR provides whic
 * MapR provides data locatity features so training data can be localized on nodes with GPUs
 * MapR provides integrated tooling (e.g. Spark, Zeppelin) for a frictionless DataOps experience
 
+# Usage
+
+Compile spark app that wraps the kmeans model with streams, and copy to cluster node (e.g. 10.1.1.14):
+```
+cd /Users/idownard/development/mapr-sparkml-streaming-fires
+mvn package
+scp target/mapr-sparkml-streaming-fires-1.0-jar-with-dependencies.jar 10.1.1.14:~/
+```
+
+Upload websocket scripts to another cluster node (e.g. 10.1.1.15):
+```
+scp *.sh 10.1.1.15:~/
+```
+
+
+Connect to cluster and create streams:
+```
+maprcli stream create -path /user/mapr/ml_input -produceperm p -consumeperm p -topicperm p -ttl 604800
+maprcli stream topic create -path /user/mapr/ml_input -topic requester001
+maprcli stream create -path /user/mapr/ml_output -produceperm p -consumeperm p -topicperm p -ttl 604800
+maprcli stream topic create -path /user/mapr/ml_output -topic kmeans001
+```
+
+Run stream consumer to pipe lat/log requests in the ml_input stream:
+```
+ssh 10.1.1.15 ml_input_stream.sh
+ssh 10.1.1.15 ml_output_stream.sh
+```
+
+Run spark app:
+```
+ssh 10.1.1.14
+/opt/mapr/spark/spark-2.1.0/bin/spark-submit --class com.sparkkafka.fire.SparkKafkaConsumerProducer --master local[2] ~/mapr-sparkml-streaming-fires-1.0-jar-with-dependencies.jar /user/mapr/data/save_fire_model  /user/mapr/ml_input:requester001 /user/mapr/ml_output:kmeans001
+```
+
+Open Zeppelin, [http://10.1.1.14:7000]())
+
+Import, open, and run the Forest Fire Notebook
+
+Make the following observations from the notebook:
+
+* Note how we download data. Note how this would be much harder if our platform was not POSIX.
+* Note how we snapshot data. Talk about how snapshots are essential for iterating concepts
+* Note how the USDA shapefile is converted to to csv. Also note how we need two different schemas. These types of comlexities are common in data wrangling. 
+* Note where we fit the kmeans model. Most models have far more parameters than two, and often require trial and error to get right, so A/B testing and monitoring is really important.
+* Note how we can save a model
+* Note how we can apply the model to look up a cluster id for a lat/long
+* Also note how we run the model as a spark job, which reads lat/longs from stream and output cluster ids in real time.
+
+Open [http://10.1.1.15:3433/ml_input_stream.sh](), enter 44.5,-111.9 coordinate
+Open [http://10.1.1.15:3433/ml_output_stream.sh]() and watch it output the cluster centroid (cid) and its lat/long coordinates.
+
+Talk about how these websockets are a common interface for web services and microservices. Here we're using them to visualize an API implemented with MapR Streams.
+
