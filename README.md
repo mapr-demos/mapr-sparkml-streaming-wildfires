@@ -8,7 +8,7 @@ Minimize the cost and time to respond to fires by staging firefighting assets as
 
 The United States Forest Service provides datasets that describe forest fires that have occurred in Canada and the United States since year 2000. That data can be downloaded from https://fsapps.nwcg.gov/gisdata.php. This is the data we used for this study.
 
-<img src="https://github.com/mapr-demos/mapr-sparkml-streaming-wildfires/blob/master/images/fire_centroids.png?raw=true" width="33%" align="left" hspace="10">
+<img src="https://github.com/mapr-demos/mapr-sparkml-streaming-wildfires/blob/master/images/fire_centroids.png?raw=true" width="33%" align="right" hspace="10">
 
 Predict where forest fires are prone to occur by partitioning the locations of past burns into clusters whose centroids can be used to optimally place heavy fire fighting equipment as near as possible to where fires are likely to occur. The K-Means clustering algorithm is perfectly suited for this purpose.
 
