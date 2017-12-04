@@ -2,6 +2,14 @@
 
 Minimize the cost and time to respond to fires by staging firefighting assets as close as possible to where fires are likely to occur.
 
+<img src="https://github.com/mapr-demos/mapr-sparkml-streaming-wildfires/blob/master/images/fire_centroids.png?raw=true" width="66%" align="center" hspace="10">
+
+# The Dataset
+
+<img src="https://github.com/mapr-demos/mapr-sparkml-streaming-wildfires/blob/master/images/USGS.png?raw=true" width="3%" align="right" hspace="10">
+
+The United States Forest Service provides datasets that describe forest fires that have occurred in Canada and the United States since year 2000. That data can be downloaded from https://fsapps.nwcg.gov/gisdata.php. This is the data we used for this study.
+
 # The Solution
 
 Predict where forest fires are prone to occur by partitioning the locations of past burns into clusters whose centroids can be used to optimally place heavy fire fighting equipment as near as possible to where fires are likely to occur. The K-Means clustering algorithm is perfectly suited for this purpose.
@@ -51,7 +59,7 @@ ssh 10.1.1.14
 
 Open Zeppelin, [http://10.1.1.14:7000]())
 
-Import, open, and run the Forest Fire Notebook
+Import, open, and run the [Forest Fire Notebook](https://github.com/mapr-demos/mapr-sparkml-streaming-wildfires/blob/master/notebook/Forest%20Fire%20Prediction.json) in Zeppelin.
 
 Make the following observations from the notebook:
 
@@ -67,4 +75,8 @@ Open [http://10.1.1.15:3433/ml_input_stream.sh](), enter 44.5,-111.9 coordinate
 Open [http://10.1.1.15:3433/ml_output_stream.sh]() and watch it output the cluster centroid (cid) and its lat/long coordinates.
 
 Talk about how these websockets are a common interface for web services and microservices. Here we're using them to visualize an API implemented with MapR Streams.
+
+This solution is architected in a synchronous ML pipeline as shown below:
+
+<img src="https://github.com/mapr-demos/mapr-sparkml-streaming-wildfires/blob/master/images/synchronous_pipeline.png?raw=true" width="66%" align="center" hspace="10">
 
