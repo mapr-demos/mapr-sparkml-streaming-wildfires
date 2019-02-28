@@ -24,22 +24,29 @@ Predict where forest fires are prone to occur by partitioning the locations of p
 
 # Usage
 
-Compile spark app that wraps the kmeans model with streams, and copy to cluster node (e.g. 10.1.1.14):
+Compile spark app that wraps the kmeans model with streams, and copy to cluster node (e.g. nodea):
 ```
 cd /Users/idownard/development/mapr-sparkml-streaming-fires
 mvn package
-scp target/mapr-sparkml-streaming-fires-1.0-jar-with-dependencies.jar 10.1.1.14:~/
+scp target/mapr-sparkml-streaming-fires-1.0-jar-with-dependencies.jar nodea:~/
 ```
 
-Copy a pre-compiled model for fire prediction:
+A pre-built fat jar and kmeans model have been added to this repo so you don't have to run `mvn package` or compile the model in the provided Zeppelin notebook. Run these commands to put the model and jar in the right place:
+
+Copy the kmeans model:
 ```
-scp saved_model.tgz 10.1.1.14:~/
-ssh 10.1.1.14 tar -C /mapr/demo.mapr.com/user/mapr/data -xvf saved_model.tgz
+scp saved_model.tgz nodea:~/
+ssh nodea tar -C /mapr/demo.mapr.com/user/mapr/data -xvf saved_model.tgz
+```
+Copy the fat jar for applying the kmeans model on streaming lat/long coordinates. The fat jar has been split to fit within github's 100MB file size limit. Join the pieces with cat:
+```
+cat mapr-sparkml-streaming-fires-1.0-jar-with-dependencies.jar-* > mapr-sparkml-streaming-fires-1.0-jar-with-dependencies.jar
+scp mapr-sparkml-streaming-fires-1.0-jar-with-dependencies.jar nodea:~/
 ```
 
 Upload websocket scripts to another cluster node (e.g. 10.1.1.15):
 ```
-scp *.sh 10.1.1.15:~/
+scp *.sh nodeb:~/
 ```
 
 
@@ -53,17 +60,17 @@ maprcli stream topic create -path /user/mapr/ml_output -topic kmeans001
 
 Run stream consumer to pipe lat/log requests in the ml_input stream:
 ```
-ssh 10.1.1.15 ml_input_stream.sh
-ssh 10.1.1.15 ml_output_stream.sh
+ssh nodeb ml_input_stream.sh
+ssh nodeb ml_output_stream.sh
 ```
 
 Run spark app:
 ```
-ssh 10.1.1.14
+ssh nodea
 /opt/mapr/spark/spark-2.1.0/bin/spark-submit --class com.sparkkafka.fire.SparkKafkaConsumerProducer --master local[2] ~/mapr-sparkml-streaming-fires-1.0-jar-with-dependencies.jar /user/mapr/data/save_fire_model  /user/mapr/ml_input:requester001 /user/mapr/ml_output:kmeans001
 ```
 
-Open Zeppelin, [http://10.1.1.14:7000]())
+Open Zeppelin, [http://nodea:7000]())
 
 Import, open, and run the [Forest Fire Notebook](https://github.com/mapr-demos/mapr-sparkml-streaming-wildfires/blob/master/notebook/Forest%20Fire%20Prediction.json) in Zeppelin.
 
@@ -77,8 +84,8 @@ Make the following observations from the notebook:
 * Note how we can apply the model to look up a cluster id for a lat/long
 * Also note how we run the model as a spark job, which reads lat/longs from stream and output cluster ids in real time.
 
-Open [http://10.1.1.15:3433/ml_input_stream.sh](), enter 44.5,-111.9 coordinate
-Open [http://10.1.1.15:3433/ml_output_stream.sh]() and watch it output the cluster centroid (cid) and its lat/long coordinates.
+Open [http://nodeb:3433/ml_input_stream.sh](), enter 44.5,-111.9 coordinate
+Open [http://nodeb:3433/ml_output_stream.sh]() and watch it output the cluster centroid (cid) and its lat/long coordinates.
 
 Talk about how these websockets are a common interface for web services and microservices. Here we're using them to visualize an API implemented with MapR Streams.
 
