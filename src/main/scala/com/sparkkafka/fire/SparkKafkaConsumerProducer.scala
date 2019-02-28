@@ -10,7 +10,7 @@ import org.apache.spark.streaming._
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{ Seconds, StreamingContext }
-import org.apache.spark.streaming.kafka09.{ ConsumerStrategies, KafkaUtils, LocationStrategies }
+import org.apache.spark.streaming.kafka010.{ ConsumerStrategies, KafkaUtils, LocationStrategies }
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka.producer._
 import org.apache.kafka.common.serialization.StringSerializer
@@ -147,7 +147,8 @@ object SparkKafkaConsumerProducer extends Serializable {
           val tRDD: org.apache.spark.sql.Dataset[String] = res.toJSON
 
           val temp: RDD[String] = tRDD.rdd
-          temp.sendToKafka[StringSerializer](outtopic, producerConf)
+          //temp.sendToKafka[StringSerializer](outtopic, producerConf)
+          temp.sendToKafka(outtopic, producerConf)
 
           println("sending messages")
           temp.take(2).foreach(println)
