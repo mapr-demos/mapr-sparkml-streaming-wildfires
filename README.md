@@ -31,6 +31,12 @@ mvn package
 scp target/mapr-sparkml-streaming-fires-1.0-jar-with-dependencies.jar 10.1.1.14:~/
 ```
 
+Copy a pre-compiled model for fire prediction:
+```
+scp saved_model.tgz 10.1.1.14:~/
+ssh 10.1.1.14 tar -C /mapr/demo.mapr.com/user/mapr/data -xvf saved_model.tgz
+```
+
 Upload websocket scripts to another cluster node (e.g. 10.1.1.15):
 ```
 scp *.sh 10.1.1.15:~/
